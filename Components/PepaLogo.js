@@ -7,7 +7,6 @@ import pepa from "../pepa.jpg";
 export const PepaLogo = ({containerStyles, logoStyles, text}) => {
   return (
     <>
-      <PepaLogo />
       <Animatable.View
         animation="pulse"
         iterationCount="infinite"
