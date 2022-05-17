@@ -1,5 +1,4 @@
 import {StyleSheet, Text, SafeAreaView, Platform, Image, View} from 'react-native';
-import {PepaBar} from "../PepaBar";
 import React from 'react'
 import {Button} from "react-native-paper";
 import Toast from 'react-native-toast-message';
@@ -14,6 +13,7 @@ import {useAuth} from "../Contexts/AuthContext";
 import {Spinner} from "../Components/Spinner";
 import basicStyles from '../Styles'
 import {useNavigation} from "@react-navigation/native";
+import NativeSafeAreaView from "react-native-safe-area-context/src/specs/NativeSafeAreaView";
 
 const isIPhone = Platform.OS === 'ios';
 const remoteIP = '185.105.108.208'
@@ -130,7 +130,6 @@ export default function MainScreen() {
           Купить подписку
         </Button>
   }
-  console.log(Boolean(authData.certificate), 'bool')
 
   const renderBody = () => {
     if (isIPLoading) {
@@ -140,8 +139,6 @@ export default function MainScreen() {
       <>
         {isVpnConnected && <Image source={fire} style={styles.fire} /> }
         <Image source={city} style={styles.city} />
-        <DrawerToggler />
-        <PepaBar />
         <View style={styles.main}>
           <Text style={basicStyles.label}>
             Pepa VPN
@@ -162,10 +159,10 @@ export default function MainScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <NativeSafeAreaView style={styles.container}>
       {renderBody()}
       <Toast />
-    </SafeAreaView>
+    </NativeSafeAreaView>
   );
 }
 
@@ -174,7 +171,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   main: {
     flexDirection: 'column',
