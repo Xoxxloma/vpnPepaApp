@@ -6,7 +6,7 @@ import pepa from '../pepa.jpg'
 export const CommodityCard = ({subscribe, handler}) => {
 
   return (
-      <Card style={{backgroundColor: "white", marginBottom: 15}}>
+      <Card style={{backgroundColor: "white", marginVertical: 15}}>
         <Card.Content style={{padding: 10}}>
           <Title style={{...styles.mainColor, fontSize: 22}}>{subscribe.text} по цене {subscribe.price} ₽</Title>
           <Paragraph style={{...styles.mainColor, fontSize: 15 }}>{subscribe.description}</Paragraph>

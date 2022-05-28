@@ -5,9 +5,14 @@ import { ProfileScreen } from '../Screens/ProfileScreen'
 import {useAuth} from "../Contexts/AuthContext";
 import Icon from "react-native-vector-icons/AntDesign";
 import {ShoppingCartScreen} from "../Screens/ShoppingCartScreen";
+import {FeedbackScreen} from "../Screens/FeedbackScreen";
 
 
 const Drawer = createDrawerNavigator();
+
+function CustomDrawerIcon({focused, iconName}) {
+  return <Icon name={iconName} size={30} color={focused ? "#D9550D" : 'gray' } />
+}
 
 function CustomDrawerContent(props) {
   const {signOut} = useAuth()
@@ -20,7 +25,7 @@ function CustomDrawerContent(props) {
           labelStyle={{fontSize: 17}}
           onPress={() => signOut()}
           style={{paddingVertical: 10}}
-          icon={({focused}) => <Icon name="logout" size={30} color={focused ? "#D9550D" : 'gray'} />}
+          icon={({focused}) => <CustomDrawerIcon focused={focused} iconName="logout" />}
         />
     </DrawerContentScrollView>
   )
@@ -49,9 +54,38 @@ export function AppStack () {
       }}
       drawerContent={props => <CustomDrawerContent {...props} />}
     >
-      <Drawer.Screen name="MainPage" component={MainScreen} options={{ title: 'Главная страница', drawerIcon: ({focused}) => <Icon name="home" size={30} color={focused ? "#D9550D" : 'gray' } /> }} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} options={{ title: 'Профиль', drawerIcon: ({focused}) => <Icon name="user" size={30} color={focused ? "#D9550D" : 'gray' }  /> }}  />
-      <Drawer.Screen name="Shop" component={ShoppingCartScreen} options={{title: 'Купить подписку', drawerIcon: ({focused}) => <Icon name="shoppingcart" size={30} color={focused ? "#D9550D" : 'gray' }  /> }}  />
+      <Drawer.Screen
+        name="MainPage"
+        component={MainScreen}
+        options={{
+          title: 'Главная страница',
+          drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="home" />
+        }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          title: 'Профиль',
+          drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="user" />
+        }}
+      />
+      <Drawer.Screen
+        name="Shop"
+        component={ShoppingCartScreen}
+        options={{
+          title: 'Купить подписку',
+          drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="shoppingcart" />
+        }}
+      />
+      <Drawer.Screen
+        name="Feedback"
+        component={FeedbackScreen}
+        options={{
+          title: 'Задать вопрос',
+          drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="notification" />
+        }}
+      />
     </Drawer.Navigator>
   )
 }

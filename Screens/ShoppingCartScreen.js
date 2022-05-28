@@ -1,31 +1,29 @@
 import React from 'react';
-import {ScrollView, Text, StyleSheet, Linking, StatusBar} from 'react-native'
+import {ScrollView, Linking} from 'react-native'
 import {CommodityCard} from "../Components/CommodityCard";
 import axios from "axios";
 import {subscribes} from "../Utils/consts";
 import {useAuth} from "../Contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import Toast from "react-native-toast-message";
+import BackgroundTimer from 'react-native-background-timer'
 import styles from '../Styles'
 
 
 const statusPoller = async (telegramId, billId, successCallback) => {
 
-  const checkCondition = async () => {
+  BackgroundTimer.runBackgroundTimer(async () => {
     try {
       const statusResponse = await axios.get('http://185.105.108.208:4003/pollPaymentStatus', {params: { billId }})
-      if (statusResponse.data.value === "WAITING") {
-        setTimeout(checkCondition, 10000)
-      } else {
+      if (statusResponse.data.value !== "WAITING") {
+        BackgroundTimer.stopBackgroundTimer()
         const clientResponse = await axios.post('http://185.105.108.208:4003/savePayment', {telegramId, status: statusResponse.data})
         successCallback(clientResponse.data)
       }
     } catch (e) {
-      console.log(e, "ERROR poller")
+      BackgroundTimer.stopBackgroundTimer()
     }
-  }
-
-  checkCondition()
+  }, 10000)
 }
 
 

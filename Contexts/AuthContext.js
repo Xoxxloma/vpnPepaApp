@@ -1,8 +1,6 @@
 import React from 'react'
-import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import { ToastAndroid } from 'react-native'
 
 const AuthContext = React.createContext({})
 
