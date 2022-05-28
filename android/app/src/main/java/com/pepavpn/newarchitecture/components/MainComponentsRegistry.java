@@ -5,6 +5,7 @@ import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.fabric.ComponentFactory;
 import com.facebook.soloader.SoLoader;
 
+
 /**
  * Class responsible to load the custom Fabric Components. This class has native methods and needs a
  * corresponding C++ implementation/header file to work correctly (already placed inside the jni/
