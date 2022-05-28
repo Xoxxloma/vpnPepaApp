@@ -37,12 +37,6 @@ export const ShoppingCartScreen = () => {
     if (data.status === "PAID") {
       Toast.show({type: 'success', text1: 'Оплата произведена успешно.', text2: 'Приятного пользования!'})
     }
-    if (data.status === "EXPIRED") {
-      Toast.show({type: 'info', text1: 'Срок оплаты истек.', text2: 'В случае необходимости - повторите попытку'})
-    }
-    if (data.status === "REJECTED") {
-      Toast.show({ type: 'error', text1: 'Ошибка!', text2: 'Попробуйте снова или обратитесь в поддержку.' })
-    }
   }
 
   const onBuyHandler = (subscribe, telegramId) => async () => {
@@ -50,6 +44,8 @@ export const ShoppingCartScreen = () => {
       const {data: paymentDetails} = await axios.post('http://185.105.108.208:4003/createNewBill', {subscribe, telegramId })
       statusPoller(telegramId, paymentDetails.billId, successCallback)
       await Linking.openURL(paymentDetails.payUrl)
+      // successCallback({client: {...authData, telegramId: 666666, certificate: ''}})
+
     } catch (e) {
       console.log(e)
     }

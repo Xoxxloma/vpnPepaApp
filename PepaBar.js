@@ -1,6 +1,9 @@
 import {StyleSheet, View} from 'react-native';
+import DocumentPicker from 'react-native-document-picker'
 import React from "react"
+import fs from 'react-native-fs'
 import Icon from "react-native-vector-icons/MaterialIcons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import {useAuth} from "./Contexts/AuthContext";
 

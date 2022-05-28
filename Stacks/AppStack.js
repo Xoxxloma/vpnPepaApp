@@ -6,7 +6,7 @@ import {useAuth} from "../Contexts/AuthContext";
 import Icon from "react-native-vector-icons/AntDesign";
 import {ShoppingCartScreen} from "../Screens/ShoppingCartScreen";
 import {FeedbackScreen} from "../Screens/FeedbackScreen";
-import Toast from "react-native-toast-message";
+
 
 const Drawer = createDrawerNavigator();
 
@@ -33,7 +33,6 @@ function CustomDrawerContent(props) {
 
 export function AppStack () {
   return (
-    <>
     <Drawer.Navigator
       screenOptions={{
         tabBarStyle: {display: 'none'},
@@ -88,7 +87,5 @@ export function AppStack () {
         }}
       />
     </Drawer.Navigator>
-      <Toast />
-      </>
   )
 }

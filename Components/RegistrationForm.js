@@ -18,17 +18,16 @@ export const RegistrationForm = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={{...basicStyles.label, ...styles.registerLogo}}>
-        Регистрация
+        Registration
       </Text>
         <Button
-          labelStyle={{color: 'white', fontSize: 17}}
+          labelStyle={{color: 'white', fontSize: 20}}
           style={{...styles.loginButton, ...styles.mt10}}
           onPress={callback}
-          icon={props => <Icon name="telegram" size={25} {...props}/>}
         >
-          Перейти в telegram
+         <Icon name="telegram" size={30} style={{marginRight: 20}} /> Перейти в telegram
         </Button>
-      <Button labelStyle={{color: '#D9550D', fontSize: 14}} style={styles.mt10} onPress={toLoginHandler}>Есть код? Залогинься здесь!</Button>
+      <Button labelStyle={{color: '#D9550D'}} style={styles.mt10} onPress={toLoginHandler}>Есть код? Залогинься здесь!</Button>
     </SafeAreaView>
   )
 }
@@ -46,7 +45,7 @@ const styles = StyleSheet.create({
   loginButton: {
     backgroundColor: '#D9550D',
     color: 'white',
-    paddingVertical: 10,
+    padding: 10,
   },
   registerLogo: {
     color: '#D9550D',
