@@ -161,7 +161,6 @@ export default function MainScreen() {
   return (
     <NativeSafeAreaView style={styles.container}>
       {renderBody()}
-      <Toast />
     </NativeSafeAreaView>
   );
 }
