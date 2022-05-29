@@ -24,7 +24,7 @@ export const LoginForm = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={{...basicStyles.label, ...styles.registerLogo}}>
-        Login
+        Логин
       </Text>
       <TextInput
         label="Код авторизации из telegram"
@@ -35,13 +35,13 @@ export const LoginForm = () => {
         style={styles.mt10}
       />
       <Button
-        labelStyle={{color: 'white', fontSize: 20}}
+        labelStyle={{color: 'white', fontSize: 17}}
         style={{...styles.loginButton, ...styles.mt10}}
         onPress={login}
       >
-        Login
+        Войти
       </Button>
-      <Button labelStyle={{color: '#D9550D'}} style={styles.mt10} onPress={toRegisterHandler}>Нет кода? Зарегистрируйся сейчас!</Button>
+      <Button labelStyle={{color: '#D9550D', fontSize: 14}} style={styles.mt10} onPress={toRegisterHandler}>Зарегистрируйся здесь!</Button>
     </SafeAreaView>
   )
 }

@@ -37,6 +37,12 @@ export const ShoppingCartScreen = () => {
     if (data.status === "PAID") {
       Toast.show({type: 'success', text1: 'Оплата произведена успешно.', text2: 'Приятного пользования!'})
     }
+    if (data.status === "EXPIRED") {
+      Toast.show({type: 'info', text1: 'Срок оплаты истек.', text2: 'В случае необходимости - повторите попытку'})
+    }
+    if (data.status === "REJECTED") {
+      Toast.show({ type: 'error', text1: 'Ошибка!', text2: 'Попробуйте снова или обратитесь в поддержку.' })
+    }
   }
 
   const onBuyHandler = (subscribe, telegramId) => async () => {

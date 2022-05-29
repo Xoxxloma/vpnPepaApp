@@ -8,7 +8,6 @@ import fire from '../fire.png'
 import city from '../city.png'
 import publicIP from 'react-native-public-ip'
 import {PepaLogo} from "../Components/PepaLogo";
-import {DrawerToggler} from "../Components/DrawerToggler";
 import {useAuth} from "../Contexts/AuthContext";
 import {Spinner} from "../Components/Spinner";
 import basicStyles from '../Styles'
@@ -161,7 +160,6 @@ export default function MainScreen() {
   return (
     <NativeSafeAreaView style={styles.container}>
       {renderBody()}
-      <Toast />
     </NativeSafeAreaView>
   );
 }
