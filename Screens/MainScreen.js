@@ -35,9 +35,8 @@ export default function MainScreen() {
           setVpnStatus(2)
         }
         setIPLoading(false)
-      } catch (e) {
+      } finally {
         setIPLoading(false)
-        console.log(e, "error in prefill")
       }
     }
     checkIp()
@@ -77,7 +76,6 @@ export default function MainScreen() {
         ovpnString: authData.certificate
       });
     } catch (error) {
-      console.log(error, 'error start vpn')
       Toast.show({type: 'error', text1: 'Ошибка подключения, попробуйте позже!'})
     }
   }
@@ -105,7 +103,7 @@ export default function MainScreen() {
   const renderButton = () => {
     const btnText = isVpnConnected ? 'Отключить' : isVpnDisconnected ? 'Подключить' : 'В процессе'
 
-    return authData.certificate
+    return authData.isSubscriptionActive
       ? <Animatable.View
         animation={isVpnDisconnected ? 'shake' : ''}
         iterationCount="infinite"
@@ -144,7 +142,7 @@ export default function MainScreen() {
           </Text>
           <PepaLogo containerStyles={{...basicStyles.logoContainer, ...styles.grayBorder }} logoStyles={basicStyles.logo} />
             <View style={styles.profileNameContainer}>
-              {Boolean(authData.certificate)
+              {Boolean(authData.isSubscriptionActive)
                 ? <Text style={styles.profileNameLabel}>Подписка №{authData.telegramId}</Text>
                 : <Text style={styles.profileNameLabel}>У вас нет активной подписки</Text>
               }

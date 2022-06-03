@@ -3,7 +3,6 @@ import {Button, TextInput} from "react-native-paper";
 import React from 'react';
 import {StyleSheet, Text, View, Linking} from "react-native";
 import {useNavigation} from "@react-navigation/native";
-import Toast from "react-native-toast-message";
 import {useAuth} from "../Contexts/AuthContext";
 import basicStyles from '../Styles'
 
@@ -14,13 +13,9 @@ export const LoginForm = () => {
   const { signIn, error } = useAuth()
 
   const login = async() => {
-    try {
-      await signIn(code)
-    } catch (e) {
-      Toast.show({type: 'error', text1: 'Ошибка логина, попробуйте снова или перезагрузите приложение!'})
-    }
-
+    await signIn(code)
   }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={{...basicStyles.label, ...styles.registerLogo}}>

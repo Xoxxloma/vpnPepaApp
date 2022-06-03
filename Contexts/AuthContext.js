@@ -1,6 +1,8 @@
 import React from 'react'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
+import {shouldUpdateAuthData} from "../Utils/helpers";
+import axios from "axios";
 
 const AuthContext = React.createContext({})
 
@@ -20,15 +22,13 @@ const AuthProvider = ({ children }) => {
 
   const signIn = async (authCode) => {
     try {
-      const data = await fetch(`http://185.105.108.208:4003/getClientByAuthCode/${authCode}`).then(r => r.json())
+      const { data } = await axios.get(`http://185.105.108.208:4003/getClientByAuthCode/${authCode}`)
       if (data) {
         await setUser(data)
-      } else {
-        Toast.show({type: 'error', text1: 'Неправильный код, проверьте правильность ввода или перезапросите код у бота'})
       }
     } catch (e) {
       setError(e)
-      console.log(e, "ERROR in sign in")
+      Toast.show({type: 'error', text1: 'Ошибка логина', text2: 'Попробуйте снова или перезагрузите приложение!'})
     }
   }
 
@@ -36,10 +36,14 @@ const AuthProvider = ({ children }) => {
     try {
       const authData = await AsyncStorage.getItem('user')
       if (authData) {
-        setAuthData(JSON.parse(authData))
+        const parsedAuthData = JSON.parse(authData);
+        if (shouldUpdateAuthData(parsedAuthData.expiresIn)) {
+          await signIn(parsedAuthData.authCode)
+        } else {
+          setAuthData(parsedAuthData)
+        }
       }
     } catch (e) {
-
     } finally {
       setLoading(false)
     }
@@ -51,7 +55,7 @@ const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ authData, loading, error, signIn, signOut, setUser}}>
+    <AuthContext.Provider value={{ authData, loading, error, signIn, signOut, setUser, setAuthData}}>
       {children}
     </AuthContext.Provider>
   )

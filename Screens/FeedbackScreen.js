@@ -1,28 +1,36 @@
 import React from 'react';
-import {ScrollView, Text, StyleSheet, SafeAreaView, StatusBar} from 'react-native'
+import {Text, StyleSheet, SafeAreaView} from 'react-native'
 import basicStyles from '../Styles'
 import {Button, TextInput} from "react-native-paper";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import {useAuth} from "../Contexts/AuthContext";
+import {MessageList} from "../Components/MessageList";
+import dayjs from "dayjs";
 
 
 export const FeedbackScreen = () => {
   const [textToSupport, setTextToSupport] = React.useState('')
-  const { authData: { telegramId, username} } = useAuth()
+  const { authData: { telegramId, name, authCode, messageList}, signIn, setAuthData } = useAuth()
+
+  React.useEffect(() => {
+    signIn(authCode)
+  }, [])
 
   const textToSupportHandler = (e) => setTextToSupport(e)
   const onSendMessageToSupport = async () => {
     if (textToSupport.length < 5 || textToSupport.length > 1000) return
     try {
-      const message = `#Поддержка\nСообщение от\n@${username} с id ${telegramId}\n${textToSupport}`
-      await axios.post('http://185.105.108.208:4003/messageToSupport', { message })
+      const {data} = await axios.post('http://185.105.108.208:4003/messageToSupport', { sender: name, telegramId, timestamp: dayjs(), text: textToSupport })
+      setAuthData( prev => ({ ...prev, messageList: data }))
       setTextToSupport('')
       Toast.show({type: 'success', text1: 'Запрос в поддержку отправлен.', text2: 'Мы свяжемся с вами в течение 48 часов'})
     } catch (e) {
       Toast.show({ type: 'error', text1: 'Ошибка отправки, попробуйте позже.' })
     }
   }
+
+  const memoizedList = React.useMemo(() => <MessageList messages={messageList} />, [messageList.length] )
 
   return (
     <SafeAreaView style={basicStyles.secondaryPageContainer}>
@@ -47,13 +55,14 @@ export const FeedbackScreen = () => {
       >
         Отправить
       </Button>
+      {memoizedList}
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   sendButton: {
-    marginTop: 10,
+    marginVertical: 10,
     padding: 10,
   },
 })
