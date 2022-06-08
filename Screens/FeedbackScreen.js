@@ -7,15 +7,26 @@ import {useAuth} from "../Contexts/AuthContext";
 import {MessageList} from "../Components/MessageList";
 import dayjs from "dayjs";
 import {axiosInstance} from "../services/axiosInstance";
+import { useIsFocused } from '@react-navigation/native';
 
 
 export const FeedbackScreen = () => {
   const [textToSupport, setTextToSupport] = React.useState('')
-  const { authData: { telegramId, name, authCode, messageList}, signIn, setAuthData } = useAuth()
+  const { authData, setUser, setAuthData } = useAuth()
+  const isFocused = useIsFocused()
+  const { telegramId, name, messageList} = authData
+
 
   React.useEffect(() => {
-    signIn(authCode)
-  }, [])
+    const fetchMessages = async () => {
+      const { data: messageList } = await axiosInstance.get('/messageList', { params: { telegramId } } )
+      setUser({
+        ...authData,
+        messageList
+      })
+    }
+    fetchMessages()
+  }, [isFocused])
 
   const textToSupportHandler = (e) => setTextToSupport(e)
   const onSendMessageToSupport = async () => {
