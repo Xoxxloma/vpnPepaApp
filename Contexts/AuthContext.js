@@ -1,8 +1,8 @@
 import React from 'react'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import {shouldUpdateAuthData} from "../Utils/helpers";
-import axios from "axios";
+import {shouldUpdateAuthData, statusPoller, successCallback} from "../Utils/helpers";
+import {axiosInstance} from "../services/axiosInstance";
 
 const AuthContext = React.createContext({})
 
@@ -22,26 +22,38 @@ const AuthProvider = ({ children }) => {
 
   const signIn = async (authCode) => {
     try {
-      const { data } = await axios.get(`http://185.105.108.208:4003/getClientByAuthCode/${authCode}`)
+      const { data } = await axiosInstance.get(`getClientByAuthCode/${authCode}`)
       if (data) {
         await setUser(data)
       }
     } catch (e) {
       setError(e)
-      Toast.show({type: 'error', text1: 'Ошибка логина', text2: 'Попробуйте снова или перезагрузите приложение!'})
+      console.log(e, 'error')
+      Toast.show({type: 'error', text1: 'Ошибка логина', text2: 'Попробуйте снова или перезагрузите приложение!' })
     }
   }
 
   async function loadStorageData() {
     try {
       const authData = await AsyncStorage.getItem('user')
+      const pollingBillId = await AsyncStorage.getItem('pollingBillId')
+      const parsedAuthData = JSON.parse(authData);
+
       if (authData) {
-        const parsedAuthData = JSON.parse(authData);
         if (shouldUpdateAuthData(parsedAuthData.expiresIn)) {
           await signIn(parsedAuthData.authCode)
+          Toast.show({type: 'warning', text1: 'Алярм Алярм, подписка заканчивается сегодня!', text2: 'Но в магазине их еще много, убедись сам.', visibilityTime: 10000 })
         } else {
           setAuthData(parsedAuthData)
         }
+      }
+      // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции или продолжаем поллинг
+      if (authData && pollingBillId) {
+        statusPoller(
+          parsedAuthData.telegramId,
+          pollingBillId,
+          successCallback((data) => setUser(data.client))
+        )
       }
     } catch (e) {
     } finally {

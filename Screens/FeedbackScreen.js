@@ -2,11 +2,11 @@ import React from 'react';
 import {Text, StyleSheet, SafeAreaView} from 'react-native'
 import basicStyles from '../Styles'
 import {Button, TextInput} from "react-native-paper";
-import axios from "axios";
 import Toast from "react-native-toast-message";
 import {useAuth} from "../Contexts/AuthContext";
 import {MessageList} from "../Components/MessageList";
 import dayjs from "dayjs";
+import {axiosInstance} from "../services/axiosInstance";
 
 
 export const FeedbackScreen = () => {
@@ -21,12 +21,12 @@ export const FeedbackScreen = () => {
   const onSendMessageToSupport = async () => {
     if (textToSupport.length < 5 || textToSupport.length > 1000) return
     try {
-      const {data} = await axios.post('http://185.105.108.208:4003/messageToSupport', { sender: name, telegramId, timestamp: dayjs(), text: textToSupport })
+      const {data} = await axiosInstance.post('messageToSupport', { sender: name, telegramId, timestamp: dayjs(), text: textToSupport })
       setAuthData( prev => ({ ...prev, messageList: data }))
       setTextToSupport('')
-      Toast.show({type: 'success', text1: 'Запрос в поддержку отправлен.', text2: 'Мы свяжемся с вами в течение 48 часов'})
+      Toast.show({type: 'success', text1: 'Запрос в поддержку отправлен.', text2: 'Мы свяжемся с вами в течение 48 часов' })
     } catch (e) {
-      Toast.show({ type: 'error', text1: 'Ошибка отправки, попробуйте позже.' })
+      Toast.show({ type: 'error', text1: 'Ошибка отправки, попробуйте позже.', visibilityTime: 6000 })
     }
   }
 

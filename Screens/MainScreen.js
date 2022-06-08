@@ -1,4 +1,4 @@
-import {StyleSheet, Text, SafeAreaView, Platform, Image, View} from 'react-native';
+import {StyleSheet, Text, Platform, Image, View} from 'react-native';
 import React from 'react'
 import {Button} from "react-native-paper";
 import Toast from 'react-native-toast-message';
@@ -66,7 +66,7 @@ export default function MainScreen() {
 
   React.useEffect(() => {
     if (isVpnConnected) {
-      Toast.show({type: 'success', text1: 'Подключено успешно!'})
+      Toast.show({type: 'success', text1: 'Подключено успешно!' })
     }
   }, [vpnStatus])
 
@@ -84,8 +84,7 @@ export default function MainScreen() {
     try {
       await RNSimpleOpenvpn.disconnect();
     } catch (error) {
-      console.log(error, 'error stopVpn')
-      Toast.show({type: 'error', text1: 'Ошибка соединения, попробуйте позже!'})
+      Toast.show({ type: 'error', text1: 'Ошибка соединения, попробуйте позже!' })
     }
   }
 

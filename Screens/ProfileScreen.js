@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, SafeAreaView, ScrollView} from 'react-native';
+import {SafeAreaView, ScrollView} from 'react-native';
 import {useAuth} from "../Contexts/AuthContext";
 import {ListItem} from "../Components/ListItem";
 import { List } from 'react-native-paper'
@@ -11,7 +11,7 @@ export const ProfileScreen = () => {
   const {authData} = useAuth()
 
   const createPaymentDescription = (p) => {
-    return `Срок: ${p.term} ${termUnits[p.termUnit]}, статус: ${paymentsStatuses[p.status.value]}, дата: ${formatDate(p.status.changedDateTime)}`
+    return `Срок: ${p.term ?? ''} ${termUnits[p.termUnit] ?? ''}, статус: ${paymentsStatuses[p.status.value] ?? ''}, дата: ${formatDate(p.status.changedDateTime)}`
   }
 
   return (

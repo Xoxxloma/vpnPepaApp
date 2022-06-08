@@ -8,6 +8,9 @@ export const paymentsStatuses = {
 }
 
 export const subscribes = {
+  "5 дней": {
+    text: '5 дней', termUnit: "day", term: 5, price: 1, description: 'Тестовый тест'
+  },
   "15 дней": {
     text: '15 дней', termUnit: "day", term: 15, price: 85, description: 'Я только посмотреть'
   },

@@ -6,6 +6,7 @@ import {useAuth} from "../Contexts/AuthContext";
 import Icon from "react-native-vector-icons/AntDesign";
 import {ShoppingCartScreen} from "../Screens/ShoppingCartScreen";
 import {FeedbackScreen} from "../Screens/FeedbackScreen";
+import {AboutThisAppScreen} from "../Screens/AboutThisAppScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -83,6 +84,14 @@ export function AppStack () {
         options={{
           title: 'Задать вопрос',
           drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="notification" />
+        }}
+      />
+      <Drawer.Screen
+        name="About"
+        component={AboutThisAppScreen}
+        options={{
+          title: 'О приложении',
+          drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="tag" />
         }}
       />
     </Drawer.Navigator>
