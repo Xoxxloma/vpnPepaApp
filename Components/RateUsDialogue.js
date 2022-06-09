@@ -15,7 +15,7 @@ export const RateUsDialogue = ({hideDialogue, isDialogueVisible}) => {
         }, (async (success, error) => {
             if (success) {
                 await AsyncStorage.setItem('feedback', dayjs().format("DD-MM-YYYY"))
-                toggleDialogue()
+                hideDialogue()
             }
             if (error) {
                 Toast.show({ type: 'error', text1: 'Произошла ошибка, повторите попытку.'})

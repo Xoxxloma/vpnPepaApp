@@ -12,8 +12,10 @@ export const LoginForm = () => {
   const toRegisterHandler = async () => navigation.navigate('Registration')
   const { signIn, error } = useAuth()
 
-  const login = async() => {
-    await signIn(code)
+  const login = async () => {
+    if (code.length > 5) {
+      await signIn(code)
+    }
   }
 
   return (
@@ -30,9 +32,11 @@ export const LoginForm = () => {
         style={styles.mt10}
       />
       <Button
+        mode="contained"
         labelStyle={{color: 'white', fontSize: 17}}
         style={{...styles.loginButton, ...styles.mt10}}
         onPress={login}
+        color={code.length < 5 ? 'gray' : '#D9550D'}
       >
         Войти
       </Button>
@@ -52,12 +56,11 @@ const styles = StyleSheet.create({
     marginTop: 10
   },
   loginButton: {
-    backgroundColor: '#D9550D',
-    color: 'white',
+    marginVertical: 10,
     padding: 10,
   },
   registerLogo: {
     color: '#D9550D',
     alignSelf: 'center'
-  }
+  },
 })

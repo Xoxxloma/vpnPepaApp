@@ -1,7 +1,7 @@
 import React from 'react'
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import {shouldUpdateAuthData, statusPoller, successCallback} from "../Utils/helpers";
+import {shouldUpdateAuthData} from "../Utils/helpers";
 import {axiosInstance} from "../services/axiosInstance";
 
 const AuthContext = React.createContext({})
@@ -36,7 +36,6 @@ const AuthProvider = ({ children }) => {
   async function loadStorageData() {
     try {
       const authData = await AsyncStorage.getItem('user')
-      const pollingBillId = await AsyncStorage.getItem('pollingBillId')
       const parsedAuthData = JSON.parse(authData);
 
       if (authData) {
@@ -46,14 +45,6 @@ const AuthProvider = ({ children }) => {
         } else {
           setAuthData(parsedAuthData)
         }
-      }
-      // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции или продолжаем поллинг
-      if (authData && pollingBillId) {
-        statusPoller(
-          parsedAuthData.telegramId,
-          pollingBillId,
-          successCallback((data) => setUser(data.client))
-        )
       }
     } catch (e) {
     } finally {

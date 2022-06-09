@@ -9,7 +9,7 @@ export const Message = ({message}) => {
     <View style={{...styles.chat, ...fromStyle }}>
         <Text style={styles.title}>{message.sender}</Text>
         <Text style={styles.timestamp}>{dayjs(message.timestamp).format("DD.MM HH:mm")}</Text>
-      <Text>{message.text}</Text>
+      <Text style={{color: 'black'}}>{message.text}</Text>
     </View>
   )
 }

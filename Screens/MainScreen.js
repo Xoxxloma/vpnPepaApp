@@ -13,19 +13,39 @@ import {Spinner} from "../Components/Spinner";
 import basicStyles from '../Styles'
 import {useNavigation} from "@react-navigation/native";
 import NativeSafeAreaView from "react-native-safe-area-context/src/specs/NativeSafeAreaView";
+import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {statusPoller, successCallback} from "../Utils/helpers";
 
 const isIPhone = Platform.OS === 'ios';
 const remoteIP = '185.105.108.208'
 
 export default function MainScreen() {
-  const {authData} = useAuth()
+  const {authData, setUser} = useAuth()
   const navigation = useNavigation()
   const [vpnStatus, setVpnStatus] = React.useState(null)
-  const [isIPLoading, setIPLoading ] = React.useState(true)
+  const [isIPLoading, setIPLoading] = React.useState(true)
+  const isFocused = useIsFocused()
 
   const isVpnConnected = vpnStatus === 2
   const isVpnDisconnected = !vpnStatus || vpnStatus === 0
   const restVpnStatuses = vpnStatus === 1 || vpnStatus === 3 || vpnStatus === 4
+
+  const pollBillIfItNeeded = async () => {
+    // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции или продолжаем поллинг
+    const pollingBillId = await AsyncStorage.getItem('pollingBillId')
+    if (pollingBillId) {
+      statusPoller(
+        authData.telegramId,
+        pollingBillId,
+        successCallback((data) => setUser(data.client))
+      )
+    }
+  }
+
+  React.useEffect(() => {
+    pollBillIfItNeeded()
+  }, [isFocused])
 
   React.useEffect(() => {
     async function checkIp() {
