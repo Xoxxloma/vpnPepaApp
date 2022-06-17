@@ -3,7 +3,6 @@ import {ScrollView, Linking} from 'react-native'
 import {CommodityCard} from "../Components/CommodityCard";
 import {subscribes} from "../Utils/consts";
 import {useAuth} from "../Contexts/AuthContext";
-import {useNavigation} from "@react-navigation/native";
 import styles from '../Styles'
 import {RateUsDialogue} from "../Components/RateUsDialogue";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -13,13 +12,11 @@ import {statusPoller, successCallback} from "../Utils/helpers";
 
 export const ShoppingCartScreen = () => {
   const {authData, setUser} = useAuth()
-  const navigation = useNavigation()
   const [isDialogueVisible, setDialogueIsVisible] = React.useState(false)
   const toggleDialogue = () => setDialogueIsVisible(prev => !prev)
 
   const beforeAll = (data) => {
     setUser(data.client)
-    navigation.navigate('MainPage')
   }
 
   const afterSuccess = () => {

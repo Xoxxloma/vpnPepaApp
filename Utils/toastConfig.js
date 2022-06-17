@@ -8,6 +8,7 @@ export const toastConfig = {
       style={{
         borderLeftColor: '#D9550D'
       }}
+      text1NumberOfLines={2}
     />
   )
 }

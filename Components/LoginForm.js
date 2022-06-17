@@ -1,16 +1,15 @@
 import SafeAreaView from "react-native/Libraries/Components/SafeAreaView/SafeAreaView";
 import {Button, TextInput} from "react-native-paper";
 import React from 'react';
-import {StyleSheet, Text, View, Linking} from "react-native";
-import {useNavigation} from "@react-navigation/native";
+import {StyleSheet, Text, Linking} from "react-native";
 import {useAuth} from "../Contexts/AuthContext";
 import basicStyles from '../Styles'
+import Icon from "react-native-vector-icons/FontAwesome";
 
 export const LoginForm = () => {
-  const navigation = useNavigation()
   const [code, setCode] = React.useState('')
-  const toRegisterHandler = async () => navigation.navigate('Registration')
-  const { signIn, error } = useAuth()
+  const toTelegram = async () => await Linking.openURL('http://t.me/vpn_pepa_bot?start=auth')
+  const { signIn } = useAuth()
 
   const login = async () => {
     if (code.length > 5) {
@@ -40,7 +39,14 @@ export const LoginForm = () => {
       >
         Войти
       </Button>
-      <Button labelStyle={{color: '#D9550D', fontSize: 14}} style={styles.mt10} onPress={toRegisterHandler}>Зарегистрируйся здесь!</Button>
+      <Button
+        labelStyle={{color: '#D9550D', fontSize: 16}}
+        style={styles.mt10}
+        onPress={toTelegram}
+        icon={props => <Icon style={{ fontSize: 25}} name="telegram" {...props} /> }
+      >
+        Получи код здесь!
+      </Button>
     </SafeAreaView>
   )
 }

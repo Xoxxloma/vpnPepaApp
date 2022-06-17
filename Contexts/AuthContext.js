@@ -41,7 +41,7 @@ const AuthProvider = ({ children }) => {
       if (authData) {
         if (shouldUpdateAuthData(parsedAuthData.expiresIn)) {
           await signIn(parsedAuthData.authCode)
-          Toast.show({type: 'warning', text1: 'Алярм Алярм, подписка заканчивается сегодня!', text2: 'Но в магазине их еще много, убедись сам.', visibilityTime: 10000 })
+          Toast.show({type: 'warning', text1: 'Алярм! Подписка заканчивается сегодня или уже закончилась!', text2: 'Но в магазине их еще много, убедись сам.', visibilityTime: 6000 })
         } else {
           setAuthData(parsedAuthData)
         }
