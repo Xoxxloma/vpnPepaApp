@@ -8,6 +8,7 @@ import {RateUsDialogue} from "../Components/RateUsDialogue";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {axiosInstance} from "../services/axiosInstance";
 import {statusPoller, successCallback} from "../Utils/helpers";
+import Toast from "react-native-toast-message";
 
 
 export const ShoppingCartScreen = () => {
@@ -28,6 +29,14 @@ export const ShoppingCartScreen = () => {
   }
 
   const onBuyHandler = (subscribe, telegramId) => async () => {
+    if (subscribe.text === '1 год') {
+      return Toast.show({
+        type: 'warning',
+        text1: 'Нет ну серьезно, мы же сказали не продаем',
+        text2: 'Купи 2 раза по полгода, как тебе сделка?',
+        visibilityTime: 8000
+      })
+    }
     try {
       const {data: paymentDetails} = await axiosInstance.post('createNewBill', {subscribe, telegramId })
       await AsyncStorage.setItem('pollingBillId', paymentDetails.billId)

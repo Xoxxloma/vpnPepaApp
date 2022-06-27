@@ -4,8 +4,8 @@ import {Button} from "react-native-paper";
 import Toast from 'react-native-toast-message';
 import RNSimpleOpenvpn, { addVpnStateListener, removeVpnStateListener } from 'react-native-simple-openvpn';
 import * as Animatable from 'react-native-animatable';
-import fire from '../fire.png'
-import city from '../city.png'
+import fire from '../Images/fire.png'
+import city from '../Images/city.png'
 import publicIP from 'react-native-public-ip'
 import {PepaLogo} from "../Components/PepaLogo";
 import {useAuth} from "../Contexts/AuthContext";
@@ -16,6 +16,10 @@ import NativeSafeAreaView from "react-native-safe-area-context/src/specs/NativeS
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {statusPoller, successCallback} from "../Utils/helpers";
+import sad from '../Images/sad.gif'
+import happy from '../Images/happy.png'
+import glassesDown from '../Images/glassesDown.png'
+import waiting from '../Images/waiting.png'
 
 const isIPhone = Platform.OS === 'ios';
 const remoteIP = '185.105.108.208'
@@ -119,6 +123,14 @@ export default function MainScreen() {
 
   const navigateToShop = () => navigation.navigate('Shop')
 
+  const renderLogo = () => {
+    if (authData.isSubscriptionActive) {
+      return isVpnConnected ? glassesDown : isVpnDisconnected ? waiting : happy
+    } else {
+      return sad;
+    }
+  }
+
   const renderButton = () => {
     const btnText = isVpnConnected ? 'Отключить' : isVpnDisconnected ? 'Подключить' : 'В процессе'
 
@@ -159,7 +171,7 @@ export default function MainScreen() {
           <Text style={basicStyles.label}>
             Pepa VPN
           </Text>
-          <PepaLogo containerStyles={{...basicStyles.logoContainer, ...styles.grayBorder }} logoStyles={basicStyles.logo} />
+          <PepaLogo logo={renderLogo()} containerStyles={{...basicStyles.logoContainer, ...styles.grayBorder }} logoStyles={basicStyles.logo} />
             <View style={styles.profileNameContainer}>
               {Boolean(authData.isSubscriptionActive)
                 ? <Text style={styles.profileNameLabel}>Подписка №{authData.telegramId}</Text>

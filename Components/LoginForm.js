@@ -12,7 +12,7 @@ export const LoginForm = () => {
   const { signIn } = useAuth()
 
   const login = async () => {
-    if (code.length > 5) {
+    if (code.length >= 5) {
       await signIn(code)
     }
   }

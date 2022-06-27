@@ -1,10 +1,9 @@
 import React from 'react';
 import * as Animatable from "react-native-animatable";
 import {Image, StyleSheet, Text} from "react-native";
-import pepa from "../pepa.jpg";
 
 
-export const PepaLogo = ({containerStyles, logoStyles, text}) => {
+export const PepaLogo = ({containerStyles, logoStyles, text, logo}) => {
   return (
     <>
       <Animatable.View
@@ -12,7 +11,7 @@ export const PepaLogo = ({containerStyles, logoStyles, text}) => {
         iterationCount="infinite"
         style={containerStyles}
       >
-        <Image source={pepa} resizeMode="cover" style={logoStyles} />
+        <Image source={logo} resizeMode="cover" style={logoStyles} />
       </Animatable.View>
       {Boolean(text) && <Text style={styles.text}>{text}</Text>}
     </>
