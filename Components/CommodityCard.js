@@ -12,7 +12,7 @@ export const CommodityCard = ({subscribe, handler}) => {
         </Card.Content>
         <Card.Cover source={subscribe.logo} style={{width: 250, height: 250, alignSelf: 'center', borderRadius: 250 / 2}} />
         <Card.Actions style={{flexDirection: 'row-reverse'}}>
-          { handler && <Button mode='contained' labelStyle={{color: 'white'}} style={styles.btn} onPress={handler}>Купить</Button> }
+          <Button mode='contained' labelStyle={{color: 'white'}} style={styles.btn} onPress={handler}>Купить</Button>
         </Card.Actions>
       </Card>
   )

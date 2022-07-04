@@ -12,11 +12,11 @@ export const ListItem = ({text, description}) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    marginBottom: 5,
+    paddingHorizontal: 10,
+    marginVertical: 5,
   },
   text: {
-    fontSize: 25,
+    fontSize: 22,
     color: "white"
   },
   description: {

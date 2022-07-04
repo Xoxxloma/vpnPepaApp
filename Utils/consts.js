@@ -6,7 +6,8 @@ import mario from '../Images/mario.gif';
 
 export const termUnits = {
   day: 'день',
-  month: 'месяц'
+  month: 'месяц',
+  year: 'год'
 }
 
 export const paymentsStatuses = {
@@ -27,7 +28,7 @@ export const subscribes = {
     text: '6 месяцев', termUnit: "month", term: 6, price: 800, description: 'Возможно у Вас в роду были лепреконы или русские олигархи, ПООООООЛГОДА PEPA-VPN', logo: halfOfTheYear
   },
   "1 год": {
-    text: '1 год', termUnit: "year", term: 1, price: '???', description: 'Подписку на год пока не продаем, только показываем. Но скоро точно будем продавать, когда нарисуем лягушку-рэпера, чтобы подчеркнуть всю роскошь и богатство этой опции', logo: mario
+    text: '1 год', termUnit: "year", term: 1, price: 3000, description: 'Подписку на год пока не продаем, только показываем. Но скоро точно будем продавать, когда нарисуем лягушку-рэпера, чтобы подчеркнуть всю роскошь и богатство этой опции', logo: mario
   },
 }
 

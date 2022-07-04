@@ -6,7 +6,7 @@ import {useAuth} from "../Contexts/AuthContext";
 import basicStyles from '../Styles'
 import Icon from "react-native-vector-icons/FontAwesome";
 
-export const LoginForm = () => {
+export const LoginFormScreen = () => {
   const [code, setCode] = React.useState('')
   const toTelegram = async () => await Linking.openURL('http://t.me/vpn_pepa_bot?start=auth')
   const { signIn } = useAuth()
