@@ -6,33 +6,35 @@ import Toast from "react-native-toast-message";
 import {useAuth} from "../Contexts/AuthContext";
 import {MessageList} from "../Components/MessageList";
 import dayjs from "dayjs";
-import {axiosInstance} from "../services/axiosInstance";
-import { useIsFocused } from '@react-navigation/native';
+import {API} from "../services/axiosInstance";
+import {useFocusEffect} from '@react-navigation/native';
 
 
 export const FeedbackScreen = () => {
   const [textToSupport, setTextToSupport] = React.useState('')
   const { authData, setUser, setAuthData } = useAuth()
   const { telegramId, name, messageList} = authData
-  const isFocused = useIsFocused()
 
-  React.useEffect(() => {
-    const fetchMessages = async () => {
-      const { data: messageList } = await axiosInstance.get('/messageList', { params: { telegramId } } )
-      setUser({
-        ...authData,
-        messageList
-      })
-    }
-    fetchMessages()
-  }, [isFocused])
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchMessages = async () => {
+        const messageList = await API.getMessageList(telegramId)
+        setUser({
+          ...authData,
+          messageList
+        })
+      }
+      fetchMessages()
+    }, [])
+  )
 
   const textToSupportHandler = (e) => setTextToSupport(e)
   const onSendMessageToSupport = async () => {
     if (textToSupport.length < 5 || textToSupport.length > 1000) return
     try {
-      const {data} = await axiosInstance.post('messageToSupport', { sender: name, telegramId, timestamp: dayjs(), text: textToSupport })
-      setAuthData( prev => ({ ...prev, messageList: data }))
+      const messageList = await API.sendMessageToSupport(name, telegramId, dayjs(), textToSupport)
+
+      setAuthData( prev => ({ ...prev, messageList }))
       setTextToSupport('')
       Toast.show({type: 'success', text1: 'Запрос в поддержку отправлен.', text2: 'Мы свяжемся с вами в течение 48 часов' })
     } catch (e) {

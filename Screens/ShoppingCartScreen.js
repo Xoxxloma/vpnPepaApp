@@ -1,15 +1,14 @@
 import React from 'react';
 import {ScrollView, Linking} from 'react-native'
 import {CommodityCard} from "../Components/CommodityCard";
-import {subscribes} from "../Utils/consts";
 import {useAuth} from "../Contexts/AuthContext";
 import styles from '../Styles'
 import {RateUsDialogue} from "../Components/RateUsDialogue";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {axiosInstance} from "../services/axiosInstance";
-import {statusPoller, successCallback} from "../Utils/helpers";
+import {API} from "../services/axiosInstance";
+import {statusPoller} from "../Utils/helpers";
 import Toast from "react-native-toast-message";
-import {useIsFocused} from "@react-navigation/native";
+import {useFocusEffect} from "@react-navigation/native";
 
 const messages = {
   1: {
@@ -28,21 +27,18 @@ const messages = {
 
 
 export const ShoppingCartScreen = () => {
-  const {authData, setUser} = useAuth()
+  const {authData, setUser, config} = useAuth()
   const [isDialogueVisible, setDialogueIsVisible] = React.useState(false)
   const toggleDialogue = () => setDialogueIsVisible(prev => !prev)
   const myRef = React.useRef(0)
-  const isFocused = useIsFocused()
 
-  React.useEffect(() => {
-    myRef.current = 0
-  }, [isFocused])
+  useFocusEffect(
+    React.useCallback(() => {
+      myRef.current = 0
+    }, [])
+  )
 
-  const beforeAll = (data) => {
-    setUser(data.client)
-  }
-
-  const afterSuccess = () => {
+  const showRateUsModal = () => {
     AsyncStorage.getItem('feedback').then(hasFeedback => {
       if (!hasFeedback) {
         toggleDialogue()
@@ -63,9 +59,9 @@ export const ShoppingCartScreen = () => {
       myRef.current = 0
     }
     try {
-      const {data: paymentDetails} = await axiosInstance.post('createNewBill', {subscribe, telegramId })
+      const paymentDetails = await API.createNewBill(subscribe, telegramId)
       await AsyncStorage.setItem('pollingBillId', paymentDetails.billId)
-      statusPoller(telegramId, paymentDetails.billId, successCallback(beforeAll, afterSuccess))
+      await statusPoller(telegramId, paymentDetails.billId, setUser, showRateUsModal)
       await Linking.openURL(paymentDetails.payUrl)
     } catch (e) {
       console.log(e)
@@ -78,11 +74,11 @@ export const ShoppingCartScreen = () => {
         isDialogueVisible={isDialogueVisible}
         hideDialogue={toggleDialogue}
       />
-      { Object.keys(subscribes).map(s => (
+      { Object.keys(config.tariffs).map(s => (
         <CommodityCard
           key={s}
-          subscribe={s === '1 год' ? {...subscribes[s], price: '???' } : subscribes[s]}
-          handler={onBuyHandler(subscribes[s], authData.telegramId)}
+          subscribe={s === '1 год' ? {...config.tariffs[s], price: '???' } : config.tariffs[s]}
+          handler={onBuyHandler(config.tariffs[s], authData.telegramId)}
         />
       ))}
     </ScrollView>

@@ -9,7 +9,8 @@ import basicStyles from '../Styles'
 export const RegistrationForm = () => {
   const navigation = useNavigation()
   const callback = async () => {
-    await Linking.openURL('http://t.me/vpn_pepa_bot?start=auth')
+    //await Linking.openURL('http://t.me/vpn_pepa_bot?start=auth')
+    await Linking.openURL('http://t.me/findTattooMaster_bot?start=auth')
     toLoginHandler()
   }
 

@@ -7,6 +7,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import {ShoppingCartScreen} from "../Screens/ShoppingCartScreen";
 import {FeedbackScreen} from "../Screens/FeedbackScreen";
 import {AboutThisAppScreen} from "../Screens/AboutThisAppScreen";
+import {IconButton} from "react-native-paper";
 
 const Drawer = createDrawerNavigator();
 
@@ -32,6 +33,8 @@ function CustomDrawerContent(props) {
 }
 
 export function AppStack () {
+  const {signIn, authData} = useAuth()
+
   return (
     <Drawer.Navigator
       screenOptions={{
@@ -59,6 +62,7 @@ export function AppStack () {
         component={MainScreen}
         options={{
           title: 'Главная страница',
+          headerRight: () => <IconButton icon="refresh" size={30} color='#D9550D' onPress={() => signIn(authData.authCode)} />,
           drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="home" />
         }}
       />

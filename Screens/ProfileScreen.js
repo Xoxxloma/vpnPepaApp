@@ -1,5 +1,5 @@
 import React from 'react';
-import {SafeAreaView, ScrollView} from 'react-native';
+import {SafeAreaView, ScrollView, Text} from 'react-native';
 import {useAuth} from "../Contexts/AuthContext";
 import {ListItem} from "../Components/ListItem";
 import { List } from 'react-native-paper'
@@ -18,17 +18,18 @@ export const ProfileScreen = () => {
     <SafeAreaView style={styles.secondaryPageContainer}>
       <ListItem text={authData.name} description="Имя" />
       <ListItem text={authData.isSubscriptionActive ? formatDate(authData.expiresIn) : "Нет активной подписки"} description="Срок действия подписки" />
+      <ListItem text={authData.telegramId} description="Id подписки" />
       <ScrollView>
       <List.Accordion title="История платежей" titleStyle={{color: 'white'}} theme={{colors: {text: 'white', background: 'black'}}}>
         { authData.paymentsHistory.map(p => (
-          <List.Item
-            key={p.id}
-            title={createPaymentDescription(p)}
-            titleNumberOfLines={2}
-            titleStyle={{color: 'white'}}
-            theme={{colors: {text: 'white'}}}
-          />
-        ))}
+            <List.Item
+              key={p.billId}
+              title={createPaymentDescription(p)}
+              titleNumberOfLines={2}
+              titleStyle={{color: 'white'}}
+              theme={{colors: {text: 'white'}}}
+            />
+          ))}
       </List.Accordion>
       </ScrollView>
     </SafeAreaView>

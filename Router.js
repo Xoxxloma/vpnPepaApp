@@ -6,7 +6,7 @@ import {AuthStackScreen} from "./Stacks/AuthStack";
 import {AppStack} from "./Stacks/AppStack";
 
 export const Router = () => {
-  const { authData, loading} = useAuth()
+  const { authData, config, loading} = useAuth()
 
   if (loading) {
     return <Spinner />
@@ -14,7 +14,7 @@ export const Router = () => {
 
   return (
     <NavigationContainer fallback={Spinner}>
-      { authData ? <AppStack /> : <AuthStackScreen />}
+      { (authData && config) ? <AppStack /> : <AuthStackScreen />}
     </NavigationContainer>
   )
 }

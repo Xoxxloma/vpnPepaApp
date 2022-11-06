@@ -27,10 +27,10 @@ export const RateUsDialogue = ({hideDialogue, isDialogueVisible}) => {
         <Portal>
             <Dialog visible={isDialogueVisible} onDismiss={hideDialogue} style={styles.container}>
                 <Dialog.Content>
-                    <Title>Да, это именно то окно,</Title>
-                    <Paragraph style={styles.paragraph}>которое в̶с̶е̶ ̶ч̶и̶т̶а̶ю̶т̶ закрывают закатывая глаза. А разработчики ждут оценок, чтобы продвинуть приложение выше и купить себе д̶о̶ш̶и̶р̶а̶к̶ очередной красный феррари.
+                    <Title style={styles.blackFont}>Да, это именно то окно,</Title>
+                    <Paragraph style={{...styles.paragraph, ...styles.blackFont}}>которое в̶с̶е̶ ̶ч̶и̶т̶а̶ю̶т̶ закрывают закатывая глаза. А разработчики ждут оценок, чтобы продвинуть приложение выше и купить себе д̶о̶ш̶и̶р̶а̶к̶ очередной красный феррари.
                     </Paragraph>
-                    <Paragraph style={styles.paragraph}>
+                    <Paragraph style={{...styles.paragraph, ...styles.blackFont }}>
                         Но наши пользователи личности! Мы не вправе просить, состоявшихся в этой жизни людей, лоббировать чужие интересы, ведь мы с Вами собрались здесь чтобы лайкать котов в одной, признанной экстремистской, социальной сети.
                     </Paragraph>
                 </Dialog.Content>
@@ -49,7 +49,10 @@ const styles = StyleSheet.create({
         borderRadius: 20
     },
     paragraph: {
-        fontSize: 15
+        fontSize: 15,
+    },
+    blackFont: {
+        color: 'black'
     },
     iamperson: {
         backgroundColor: '#D9550D',
