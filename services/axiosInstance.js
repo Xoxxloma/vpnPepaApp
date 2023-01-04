@@ -54,6 +54,13 @@ class ApiHelper {
   setAppVersion = async (telegramId, version) => {
     await axiosInstance.get('setAppVersion', {params: {telegramId, version}})
   }
+
+  getCurrentIp = async () => {
+    const controller = new AbortController();
+    setTimeout(() => controller.abort(), 5000)
+    const { data } = await axios.get('https://api.ipify.org/', {signal: controller.signal})
+    return data;
+  }
 }
 
 export const API = new ApiHelper();

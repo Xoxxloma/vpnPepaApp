@@ -9,7 +9,7 @@ export const Router = () => {
   const { authData, config, loading} = useAuth()
 
   if (loading) {
-    return <Spinner />
+    return <Spinner text="Загрузка..." />
   }
 
   return (

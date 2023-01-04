@@ -55,7 +55,7 @@ export const StatisticsScreen = () => {
     }, [])
   )
 
-  if (isLoading) return <Spinner />
+  if (isLoading) return <Spinner text="Загрузка..." />
 
   return (
     <SafeAreaView style={basicStyles.secondaryPageContainer}>

@@ -31,6 +31,7 @@ export const ShoppingCartScreen = () => {
   const [isDialogueVisible, setDialogueIsVisible] = React.useState(false)
   const toggleDialogue = () => setDialogueIsVisible(prev => !prev)
   const myRef = React.useRef(0)
+  const [isButtonDisabled, setButtonDisabled] = React.useState(false)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -47,6 +48,7 @@ export const ShoppingCartScreen = () => {
   }
 
   const onBuyHandler = (subscribe, telegramId) => async () => {
+    if (isButtonDisabled) return
     if (subscribe.text === '1 год') {
       if (myRef.current < 3) {
         myRef.current += 1
@@ -59,12 +61,16 @@ export const ShoppingCartScreen = () => {
       myRef.current = 0
     }
     try {
+      setButtonDisabled(true)
       const paymentDetails = await API.createNewBill(subscribe, telegramId)
       await AsyncStorage.setItem('pollingBillId', paymentDetails.billId)
       await statusPoller(telegramId, paymentDetails.billId, setUser, showRateUsModal)
       await Linking.openURL(paymentDetails.payUrl)
     } catch (e) {
       console.log(e)
+      Toast.show({type: 'error', text1: 'Во время обработки запроса произошла ошибка', text2: 'Попробуйте позже или обратитесь в поддержку'})
+    } finally {
+      setButtonDisabled(false)
     }
   }
 
@@ -77,7 +83,7 @@ export const ShoppingCartScreen = () => {
       { Object.keys(config.tariffs).map(s => (
         <CommodityCard
           key={s}
-          subscribe={s === '1 год' ? {...config.tariffs[s], price: '???' } : config.tariffs[s]}
+          subscribe={config.tariffs[s]}
           handler={onBuyHandler(config.tariffs[s], authData.telegramId)}
         />
       ))}

@@ -8,9 +8,7 @@ import fire from '../Images/fire.png'
 import city from '../Images/city.png'
 import netherlands from '../Images/netherlands.png'
 import argentina from '../Images/argentina.png'
-import publicIP from 'react-native-public-ip'
 import {PepaLogo} from "../Components/PepaLogo";
-import Icon from "react-native-vector-icons/FontAwesome";
 import {useAuth} from "../Contexts/AuthContext";
 import {Spinner} from "../Components/Spinner";
 import basicStyles from '../Styles'
@@ -43,7 +41,7 @@ export default function MainScreen() {
   const { authData, setUser, config } = useAuth()
   const navigation = useNavigation()
   const [vpnStatus, setVpnStatus] = React.useState(null)
-  const [isIPLoading, setIPLoading] = React.useState(false)
+  const [isIPLoading, setIPLoading] = React.useState(true)
   const [showInstancesMenu, setShowInstancesMenu] = React.useState(false)
   const [showOldVersionNotification, setShowOldVersionNotification] = React.useState(config?.lastStableVersion !== VersionInfo.appVersion)
   const [pickedInstance, setPickedInstance] = React.useState(config.servers[0])
@@ -54,8 +52,7 @@ export default function MainScreen() {
   const pollBillIfItNeeded = async () => {
     // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции или продолжаем поллинг
     const pollingBillId = await AsyncStorage.getItem('pollingBillId')
-    const shouldPoll = JSON.parse(await AsyncStorage.getItem('shouldPollBill'))
-    if (pollingBillId && shouldPoll) {
+    if (pollingBillId) {
       statusPoller(
         authData.telegramId,
         pollingBillId,
@@ -73,11 +70,11 @@ export default function MainScreen() {
   React.useEffect(() => {
     async function checkIp() {
       try {
-        const ip = await publicIP()
+        const ip = await API.getCurrentIp()
         const ovpnInstance = config.servers.find(i => i.ip === ip)
         if (ovpnInstance) {
           setVpnStatus(2)
-          setPickedInstance(ovpnInstance)
+          // setPickedInstance(ovpnInstance)
         }
       } finally {
         setIPLoading(false)
@@ -143,6 +140,7 @@ export default function MainScreen() {
         ovpnString: authData.certificate
       });
     } catch (error) {
+      console.log(error, 'error')
       Toast.show({type: 'error', text1: 'Ошибка подключения, попробуйте позже!'})
     }
   }
@@ -167,10 +165,10 @@ export default function MainScreen() {
 
   const navigateToShop = () => navigation.navigate('Shop')
 
-  const selectVpnInstance = (instance) => () => {
-    setPickedInstance(instance)
-    setShowInstancesMenu(false)
-  }
+  // const selectVpnInstance = (instance) => () => {
+  //   setPickedInstance(instance)
+  //   setShowInstancesMenu(false)
+  // }
 
   const renderLogo = () => {
     if (authData.isSubscriptionActive) {
@@ -180,34 +178,34 @@ export default function MainScreen() {
     }
   }
 
-  const renderInstanceMenu = () => {
-    return (
-      <View style={{position: 'absolute', top: 0, right: 0}}>
-        <Menu
-          style={{marginTop: 10}}
-          visible={showInstancesMenu}
-          onDismiss={() => setShowInstancesMenu(false)}
-          anchor={<Button
-            labelStyle={{color: '#D9550D'}}
-            onPress={() => setShowInstancesMenu(true)}>
-            Выбрать сервер
-          </Button>}
-        >
-          {config.servers.map(i => (
-            <Menu.Item
-              titleStyle={{
-                color: i.name === pickedInstance.name ? '#D9550D' : 'gray'
-              }}
-              style={{ backgroundColor: i.name === pickedInstance.name ? 'orange' : 'white'}}
-              key={i.name}
-              onPress={selectVpnInstance(i)}
-              title={i.name}
-            />
-          ))}
-        </Menu>
-      </View>
-    )
-  }
+  // const renderInstanceMenu = () => {
+  //   return (
+  //     <View style={{position: 'absolute', top: 0, right: 0}}>
+  //       <Menu
+  //         style={{marginTop: 10}}
+  //         visible={showInstancesMenu}
+  //         onDismiss={() => setShowInstancesMenu(false)}
+  //         anchor={<Button
+  //           labelStyle={{color: '#D9550D'}}
+  //           onPress={() => setShowInstancesMenu(true)}>
+  //           Выбрать сервер
+  //         </Button>}
+  //       >
+  //         {config.servers.map(i => (
+  //           <Menu.Item
+  //             titleStyle={{
+  //               color: i.name === pickedInstance.name ? '#D9550D' : 'gray'
+  //             }}
+  //             style={{ backgroundColor: i.name === pickedInstance.name ? 'orange' : 'white'}}
+  //             key={i.name}
+  //             onPress={selectVpnInstance(i)}
+  //             title={i.name}
+  //           />
+  //         ))}
+  //       </Menu>
+  //     </View>
+  //   )
+  // }
 
   const renderProfileName = () => {
     return (
@@ -255,13 +253,13 @@ export default function MainScreen() {
 
   const renderBody = () => {
     if (isIPLoading) {
-      return <Spinner />
+      return <Spinner text="Загрузка..." />
     }
     return (
       <>
         {/*{renderInstanceMenu()}*/}
         {isVpnConnected && <Image source={fire} style={styles.fire} /> }
-        <Image source={instancePictures(pickedInstance.name)} style={styles.picture} />
+        <Image source={city} style={styles.picture} />
         <View style={styles.main}>
           <Text style={basicStyles.label}>
             Pepa VPN

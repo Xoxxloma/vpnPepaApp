@@ -19,8 +19,9 @@ const AuthProvider = ({ children }) => {
   }, [])
 
   const setUser = async (user) => {
-    setAuthData(user)
-    await AsyncStorage.setItem('user', JSON.stringify(user))
+    const certificate = user.certificate.replaceAll('$remotes_here$', user.ips.map((ip) => `remote ${ip} 1194 udp`).join('\n'))
+    setAuthData({ ...user, certificate })
+    await AsyncStorage.setItem('user', JSON.stringify({ ...user, certificate }))
   }
 
   const setConfigToStorage = async (config) => {
@@ -37,8 +38,7 @@ const AuthProvider = ({ children }) => {
         await API.setAppVersion(data.telegramId, VersionInfo.appVersion)
       }
       if (data && configData) {
-        const certificate = data.certificate.replaceAll('$remotes_here$', data.ips.map((ip) => `remote ${ip} 1194`).join('\n'))
-        await setUser({...data, certificate})
+        await setUser(data)
         await setConfigToStorage(configData)
         await AsyncStorage.setItem('lastTimeConfigUpdated', JSON.stringify(dayjs()))
       }

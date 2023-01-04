@@ -23,13 +23,12 @@ export const statusPoller = async (telegramId, billId, setUser, showRateUsModal)
 
   try {
     const statusResponse = await API.getPollingStatus(billId)
-    console.log(statusResponse.value)
     if (statusResponse.value === "WAITING") {
       return setTimeout(() => statusPoller(telegramId, billId, setUser, showRateUsModal), 10000)
     } else {
       const {client, status} = await API.saveClientPayment(telegramId, statusResponse)
       await AsyncStorage.removeItem('pollingBillId')
-      setUser(client)
+      await setUser(client)
 
       if (status === "PAID") {
         Toast.show({type: 'success', text1: 'Оплата произведена успешно.', text2: 'Приятного пользования!', visibilityTime: 6000})
