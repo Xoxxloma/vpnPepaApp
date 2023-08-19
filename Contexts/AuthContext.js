@@ -19,9 +19,8 @@ const AuthProvider = ({ children }) => {
   }, [])
 
   const setUser = async (user) => {
-    const certificate = user.certificate.replaceAll('$remotes_here$', user.ips.map((ip) => `remote ${ip} 1194 udp`).join('\n'))
-    setAuthData({ ...user, certificate })
-    await AsyncStorage.setItem('user', JSON.stringify({ ...user, certificate }))
+    setAuthData(user)
+    await AsyncStorage.setItem('user', JSON.stringify(user))
   }
 
   const setConfigToStorage = async (config) => {

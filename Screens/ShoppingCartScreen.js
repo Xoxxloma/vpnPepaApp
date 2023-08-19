@@ -1,14 +1,14 @@
 import React from 'react';
-import {ScrollView, Linking} from 'react-native'
+import {ScrollView, Linking, AppState} from 'react-native'
 import {CommodityCard} from "../Components/CommodityCard";
 import {useAuth} from "../Contexts/AuthContext";
 import styles from '../Styles'
 import {RateUsDialogue} from "../Components/RateUsDialogue";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {API} from "../services/axiosInstance";
-import {statusPoller} from "../Utils/helpers";
+import {checkBillStatus} from "../Utils/helpers";
 import Toast from "react-native-toast-message";
-import {useFocusEffect} from "@react-navigation/native";
+import {useFocusEffect, useIsFocused} from "@react-navigation/native";
 
 const messages = {
   1: {
@@ -33,11 +33,35 @@ export const ShoppingCartScreen = () => {
   const myRef = React.useRef(0)
   const [isButtonDisabled, setButtonDisabled] = React.useState(false)
 
+  React.useEffect(() => {
+    const appStateListener = AppState.addEventListener(
+      'change',
+      nextAppState => {
+        if (nextAppState === 'active') {
+          checkBillIfItNeeded()
+        }
+      },
+    );
+    return () => {
+      appStateListener?.remove();
+    };
+  }, [])
+
   useFocusEffect(
     React.useCallback(() => {
       myRef.current = 0
     }, [])
   )
+
+
+  const checkBillIfItNeeded = async () => {
+    // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции
+    const pollingBillId = await AsyncStorage.getItem('pollingBillId')
+    if (pollingBillId) {
+      await checkBillStatus(authData.telegramId, pollingBillId, setUser, showRateUsModal)
+      console.log('after checking status')
+    }
+  }
 
   const showRateUsModal = () => {
     AsyncStorage.getItem('feedback').then(hasFeedback => {
@@ -64,7 +88,7 @@ export const ShoppingCartScreen = () => {
       setButtonDisabled(true)
       const paymentDetails = await API.createNewBill(subscribe, telegramId)
       await AsyncStorage.setItem('pollingBillId', paymentDetails.billId)
-      await statusPoller(telegramId, paymentDetails.billId, setUser, showRateUsModal)
+      // await statusPoller(telegramId, paymentDetails.billId, setUser, showRateUsModal)
       await Linking.openURL(paymentDetails.payUrl)
     } catch (e) {
       console.log(e)

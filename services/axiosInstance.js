@@ -46,8 +46,8 @@ class ApiHelper {
     return status;
   }
 
-  saveClientPayment = async (telegramId, status) => {
-    const {data: clientResponse} = await axiosInstance.post('savePayment', {telegramId, status})
+  saveClientPayment = async (telegramId, status, context) => {
+    const {data: clientResponse} = await axiosInstance.post('savePayment', {telegramId, status, context})
     return clientResponse
   }
 

@@ -6,8 +6,6 @@ import RNSimpleOpenvpn, { addVpnStateListener, removeVpnStateListener } from 're
 import * as Animatable from 'react-native-animatable';
 import fire from '../Images/fire.png'
 import city from '../Images/city.png'
-import netherlands from '../Images/netherlands.png'
-import argentina from '../Images/argentina.png'
 import {PepaLogo} from "../Components/PepaLogo";
 import {useAuth} from "../Contexts/AuthContext";
 import {Spinner} from "../Components/Spinner";
@@ -15,27 +13,16 @@ import basicStyles from '../Styles'
 import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import NativeSafeAreaView from "react-native-safe-area-context/src/specs/NativeSafeAreaView";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {statusPoller, subscriptionExpired} from "../Utils/helpers";
+import {checkBillStatus, subscriptionExpired} from "../Utils/helpers";
 import sad from '../Images/sad.gif'
 import happy from '../Images/happy.png'
 import glassesDown from '../Images/glassesDown.png'
 import waiting from '../Images/waiting.png'
 import VersionInfo from "react-native-version-info";
 import {API} from "../services/axiosInstance";
+import {NewFeaturesDialogue} from "../Components/NewFeaturesDialogue";
 
 const isIPhone = Platform.OS === 'ios';
-
-const instancePictures = (key) => {
-  switch (key) {
-    case "Нидерланды":
-      return netherlands
-    case 'Аргентина':
-      return argentina
-    default:
-      return city
-  }
-}
-
 
 export default function MainScreen() {
   const { authData, setUser, config } = useAuth()
@@ -43,17 +30,19 @@ export default function MainScreen() {
   const [vpnStatus, setVpnStatus] = React.useState(null)
   const [isIPLoading, setIPLoading] = React.useState(true)
   const [showInstancesMenu, setShowInstancesMenu] = React.useState(false)
+  const [showWhatsNewDialog, setShowWhatsNewDialog] = React.useState(false)
   const [showOldVersionNotification, setShowOldVersionNotification] = React.useState(config?.lastStableVersion !== VersionInfo.appVersion)
-  const [pickedInstance, setPickedInstance] = React.useState(config.servers[0])
+  const servers = config.servers.filter((s) => authData.ips?.includes(s.ip))
+  const [pickedInstance, setPickedInstance] = React.useState(servers[0])
   const isVpnConnected = vpnStatus === 2
   const isVpnDisconnected = !vpnStatus || vpnStatus === 0
   const restVpnStatuses = vpnStatus === 1 || vpnStatus === 3 || vpnStatus === 4
 
   const pollBillIfItNeeded = async () => {
-    // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции или продолжаем поллинг
+    // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции
     const pollingBillId = await AsyncStorage.getItem('pollingBillId')
     if (pollingBillId) {
-      statusPoller(
+      checkBillStatus(
         authData.telegramId,
         pollingBillId,
         setUser,
@@ -71,11 +60,12 @@ export default function MainScreen() {
     async function checkIp() {
       try {
         const ip = await API.getCurrentIp()
-        const ovpnInstance = config.servers.find(i => i.ip === ip)
+        const ovpnInstance = servers.find(i => i.ip === ip)
         if (ovpnInstance) {
           setVpnStatus(2)
-          // setPickedInstance(ovpnInstance)
+          setPickedInstance(ovpnInstance)
         }
+      } catch (e) {
       } finally {
         setIPLoading(false)
       }
@@ -119,6 +109,18 @@ export default function MainScreen() {
     }
   }, [vpnStatus])
 
+  const fillCertForConnect = () => {
+    /** Если у пользака нет айпишников и соответственно инстанс не найден - просто возвращаем его профиль, он у него захардкожен */
+    if (!pickedInstance) return authData.certificate
+    if (pickedInstance.protocol === 'tcp') {
+      return authData.certificate
+        .replace('explicit-exit-notify', '')
+        .replace('udp', 'tcp')
+        .replace('$remotes_here$', `remote ${pickedInstance.ip} ${pickedInstance.port}`)
+    } else {
+      return authData.certificate.replace('$remotes_here$', `remote ${pickedInstance.ip} ${pickedInstance.port} ${pickedInstance.protocol}`)
+    }
+  }
 
   const onUpdateVersionHandler = async () => {
     setShowOldVersionNotification(false)
@@ -136,8 +138,7 @@ export default function MainScreen() {
   async function startOvpn() {
     try {
       await RNSimpleOpenvpn.connect({
-        // remoteAddress: pickedInstance.ip,
-        ovpnString: authData.certificate
+        ovpnString: fillCertForConnect()
       });
     } catch (error) {
       console.log(error, 'error')
@@ -165,10 +166,10 @@ export default function MainScreen() {
 
   const navigateToShop = () => navigation.navigate('Shop')
 
-  // const selectVpnInstance = (instance) => () => {
-  //   setPickedInstance(instance)
-  //   setShowInstancesMenu(false)
-  // }
+  const selectVpnInstance = (instance) => () => {
+    setPickedInstance(instance)
+    setShowInstancesMenu(false)
+  }
 
   const renderLogo = () => {
     if (authData.isSubscriptionActive) {
@@ -178,40 +179,51 @@ export default function MainScreen() {
     }
   }
 
-  // const renderInstanceMenu = () => {
-  //   return (
-  //     <View style={{position: 'absolute', top: 0, right: 0}}>
-  //       <Menu
-  //         style={{marginTop: 10}}
-  //         visible={showInstancesMenu}
-  //         onDismiss={() => setShowInstancesMenu(false)}
-  //         anchor={<Button
-  //           labelStyle={{color: '#D9550D'}}
-  //           onPress={() => setShowInstancesMenu(true)}>
-  //           Выбрать сервер
-  //         </Button>}
-  //       >
-  //         {config.servers.map(i => (
-  //           <Menu.Item
-  //             titleStyle={{
-  //               color: i.name === pickedInstance.name ? '#D9550D' : 'gray'
-  //             }}
-  //             style={{ backgroundColor: i.name === pickedInstance.name ? 'orange' : 'white'}}
-  //             key={i.name}
-  //             onPress={selectVpnInstance(i)}
-  //             title={i.name}
-  //           />
-  //         ))}
-  //       </Menu>
-  //     </View>
-  //   )
-  // }
+  const renderWhatsNewButton = () => (
+    <View style={{position: 'absolute', top: 0, left: 0}}>
+      <Button
+        labelStyle={{color: '#ffffff'}}
+        onPress={() => setShowWhatsNewDialog(true)}
+      >Что нового?</Button>
+    </View>
+  )
+
+  const renderInstanceMenu = () => {
+    if (!servers.length) return null
+    return (
+      <View style={{position: 'absolute', top: 0, right: 0}}>
+        <Menu
+          style={{marginTop: 10}}
+          visible={showInstancesMenu}
+          onDismiss={() => setShowInstancesMenu(false)}
+          anchor={<Button
+            labelStyle={{color: '#ffffff'}}
+            onPress={() => setShowInstancesMenu(true)}>
+            Выбрать сервер
+          </Button>}
+        >
+          {servers.map(i => (
+            <Menu.Item
+              titleStyle={{
+                color: i.ip === pickedInstance?.ip ? '#D9550D' : 'gray'
+              }}
+              style={{ backgroundColor: i.ip === pickedInstance?.ip ? 'orange' : 'white'}}
+              key={i.ip}
+              onPress={selectVpnInstance(i)}
+              title={i.name}
+            />
+          ))}
+        </Menu>
+      </View>
+    )
+  }
 
   const renderProfileName = () => {
+    const serverName = pickedInstance?.name || 'PepaVPN'
     return (
       <View style={styles.profileNameContainer}>
         {Boolean(authData.isSubscriptionActive)
-          ? <Text style={styles.profileNameLabel}>Подписка №{authData.telegramId}</Text>
+          ? <Text style={styles.profileNameLabel}>Сервер: {serverName}</Text>
           : <Text style={styles.profileNameLabel}>У вас нет активной подписки</Text>
         }
       </View>
@@ -257,7 +269,9 @@ export default function MainScreen() {
     }
     return (
       <>
-        {/*{renderInstanceMenu()}*/}
+        <NewFeaturesDialogue hideDialog={() => setShowWhatsNewDialog(false)} visible={showWhatsNewDialog}  />
+        {renderWhatsNewButton()}
+        {renderInstanceMenu()}
         {isVpnConnected && <Image source={fire} style={styles.fire} /> }
         <Image source={city} style={styles.picture} />
         <View style={styles.main}>
