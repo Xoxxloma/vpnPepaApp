@@ -75,14 +75,6 @@ export function AppStack () {
         }}
       />
       <Drawer.Screen
-        name="Shop"
-        component={ShoppingCartScreen}
-        options={{
-          title: 'Купить подписку',
-          drawerIcon: ({focused}) => <CustomDrawerIcon focused={focused} iconName="shoppingcart" />
-        }}
-      />
-      <Drawer.Screen
         name="Feedback"
         component={FeedbackScreen}
         options={{

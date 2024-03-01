@@ -18,6 +18,7 @@ import sad from '../Images/sad.gif'
 import happy from '../Images/happy.png'
 import glassesDown from '../Images/glassesDown.png'
 import waiting from '../Images/waiting.png'
+import hobo from '../Images/hobo.png'
 import VersionInfo from "react-native-version-info";
 import {API} from "../services/axiosInstance";
 import {NewFeaturesDialogue} from "../Components/NewFeaturesDialogue";
@@ -164,16 +165,19 @@ export default function MainScreen() {
     return await stopOvpn()
   }
 
-  const navigateToShop = () => navigation.navigate('Shop')
-
   const selectVpnInstance = (instance) => () => {
     setPickedInstance(instance)
     setShowInstancesMenu(false)
   }
 
+  const goToDonationHandler = async () => {
+    const link = config.donationLink || 'https://pay.cloudtips.ru/p/52899e68'
+    await Linking.openURL(link)
+  }
+
   const renderLogo = () => {
     if (authData.isSubscriptionActive) {
-      return isVpnConnected ? glassesDown : isVpnDisconnected ? waiting : happy
+      return isVpnConnected ? hobo : isVpnDisconnected ? waiting : happy
     } else {
       return sad;
     }
@@ -222,11 +226,23 @@ export default function MainScreen() {
     const serverName = pickedInstance?.name || 'PepaVPN'
     return (
       <View style={styles.profileNameContainer}>
-        {Boolean(authData.isSubscriptionActive)
-          ? <Text style={styles.profileNameLabel}>Сервер: {serverName}</Text>
-          : <Text style={styles.profileNameLabel}>У вас нет активной подписки</Text>
-        }
+          <Text style={styles.profileNameLabel(isVpnConnected)}>
+            {Boolean(authData.isSubscriptionActive) ? `Сервер: ${serverName}` : "У вас нет активной подписки" }
+          </Text>
       </View>
+    )
+  }
+
+  const renderDonation = () => {
+    return (
+        <View style={styles.donationContainer(isVpnConnected)}>
+          <Text style={styles.donationText}>Настали трудные времена. Ночую под мостом, дерусь с голубями за еду, собираю бутылки на аренду серверов.</Text>
+          <Button
+              labelStyle={{ color: 'white', fontSize: 14}}
+              style={{ backgroundColor: '#1DC76B', marginTop: 10}}
+              onPress={goToDonationHandler}
+          >Кинуть сотку в стакан</Button>
+        </View>
     )
   }
 
@@ -251,13 +267,11 @@ export default function MainScreen() {
               {btnText}
             </Button>
           </Animatable.View>
-          : <Button
-            style={styles.noProfileText}
-            labelStyle={{color: 'white', fontSize: 15}}
-            onPress={navigateToShop}
-          >
-            Купить подписку
-          </Button>
+          : <View style={styles.donationContainer(isVpnConnected)}>
+              <Text style={styles.donationText}>
+                Профиль не активирован, напишите нам в поддержку и мы поможем
+              </Text>
+          </View>
         }
       </View>
     )
@@ -275,6 +289,7 @@ export default function MainScreen() {
         {isVpnConnected && <Image source={fire} style={styles.fire} /> }
         <Image source={city} style={styles.picture} />
         <View style={styles.main}>
+          { renderDonation() }
           <Text style={basicStyles.label}>
             Pepa VPN
           </Text>
@@ -341,16 +356,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10
   },
-  profileNameLabel: {
+  profileNameLabel: (isVpnConnected) => {
+    return {
+      fontFamily: 'TitilliumWeb-Regular',
+      fontSize: 20,
+      color: isVpnConnected ? 'black' : 'white',
+    }
+  },
+  donationText: {
     fontFamily: 'TitilliumWeb-Regular',
-    fontSize: 20,
+    fontSize: 12,
     color: 'white',
+    textAlign: 'center'
   },
   connectButton: (isVpnConnected) => {
     const bgColor = isVpnConnected ? '#D9550D' : '#1DC76B'
     return {
       backgroundColor: bgColor,
       padding: 10,
+    }
+  },
+  donationContainer: (isVpnConnected) => {
+    return {
+      backgroundColor: isVpnConnected ? 'rgba(0,0,0, 0.5)' : 'rgba(255,255,255, 0.2)',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderRadius: 8,
+      borderColor: isVpnConnected ? '#D9550D' : '#1DC76B',
+      padding: 15,
     }
   },
   noProfileText: {
