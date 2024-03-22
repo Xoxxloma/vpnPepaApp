@@ -3,7 +3,6 @@ import {ScrollView, Linking, AppState} from 'react-native'
 import {CommodityCard} from "../Components/CommodityCard";
 import {useAuth} from "../Contexts/AuthContext";
 import styles from '../Styles'
-import {RateUsDialogue} from "../Components/RateUsDialogue";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {API} from "../services/axiosInstance";
 import {checkBillStatus} from "../Utils/helpers";
@@ -100,10 +99,6 @@ export const ShoppingCartScreen = () => {
 
   return (
     <ScrollView style={styles.secondaryPageContainer}>
-      <RateUsDialogue
-        isDialogueVisible={isDialogueVisible}
-        hideDialogue={toggleDialogue}
-      />
       { Object.keys(config.tariffs).map(s => (
         <CommodityCard
           key={s}

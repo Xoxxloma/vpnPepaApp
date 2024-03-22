@@ -1,6 +1,6 @@
 import {StyleSheet, Text, Platform, Image, View, Linking} from 'react-native';
 import React from 'react'
-import {Button, Menu, IconButton} from "react-native-paper";
+import {Button, Menu} from "react-native-paper";
 import Toast from 'react-native-toast-message';
 import RNSimpleOpenvpn, { addVpnStateListener, removeVpnStateListener } from 'react-native-simple-openvpn';
 import * as Animatable from 'react-native-animatable';
@@ -10,10 +10,7 @@ import {PepaLogo} from "../Components/PepaLogo";
 import {useAuth} from "../Contexts/AuthContext";
 import {Spinner} from "../Components/Spinner";
 import basicStyles from '../Styles'
-import {useFocusEffect, useNavigation} from "@react-navigation/native";
 import NativeSafeAreaView from "react-native-safe-area-context/src/specs/NativeSafeAreaView";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {checkBillStatus, subscriptionExpired} from "../Utils/helpers";
 import sad from '../Images/sad.gif'
 import happy from '../Images/happy.png'
 import glassesDown from '../Images/glassesDown.png'
@@ -26,8 +23,7 @@ import {NewFeaturesDialogue} from "../Components/NewFeaturesDialogue";
 const isIPhone = Platform.OS === 'ios';
 
 export default function MainScreen() {
-  const { authData, setUser, config } = useAuth()
-  const navigation = useNavigation()
+  const { authData, config } = useAuth()
   const [vpnStatus, setVpnStatus] = React.useState(null)
   const [isIPLoading, setIPLoading] = React.useState(true)
   const [showInstancesMenu, setShowInstancesMenu] = React.useState(false)
@@ -38,24 +34,6 @@ export default function MainScreen() {
   const isVpnConnected = vpnStatus === 2
   const isVpnDisconnected = !vpnStatus || vpnStatus === 0
   const restVpnStatuses = vpnStatus === 1 || vpnStatus === 3 || vpnStatus === 4
-
-  const pollBillIfItNeeded = async () => {
-    // Если было закрыто приложение во время покупки - берем айдишник и смотрим результат операции
-    const pollingBillId = await AsyncStorage.getItem('pollingBillId')
-    if (pollingBillId) {
-      checkBillStatus(
-        authData.telegramId,
-        pollingBillId,
-        setUser,
-      )
-    }
-  }
-
-  useFocusEffect(
-    React.useCallback(() => {
-      pollBillIfItNeeded()
-    }, [])
-  )
 
   React.useEffect(() => {
     async function checkIp() {
@@ -128,6 +106,8 @@ export default function MainScreen() {
     await Linking.openURL('https://play.google.com/store/apps/details?id=com.pepavpn')
   }
 
+  const toTelegram = async () => await Linking.openURL('http://t.me/vpn_pepa_bot?start=auth')
+
   const getLastNews = async () => {
     const news = await API.getNews()
     if (news) {
@@ -171,7 +151,7 @@ export default function MainScreen() {
   }
 
   const goToDonationHandler = async () => {
-    const link = config.donationLink || 'https://pay.cloudtips.ru/p/52899e68'
+    const link = config.donationLink || 'https://boosty.to/pepavpn/donate'
     await Linking.openURL(link)
   }
 
@@ -251,13 +231,14 @@ export default function MainScreen() {
 
     return (
       <View style={styles.buttonContainer}>
-        {authData.isSubscriptionActive
-          ? <Animatable.View
-            animation={isVpnDisconnected ? 'shake' : ''}
-            iterationCount="infinite"
-            duration={2500}
-            iterationDelay={3000}
+       <Animatable.View
+          animation={isVpnDisconnected ? 'shake' : ''}
+          iterationCount="infinite"
+          duration={2500}
+          iterationDelay={3000}
           >
+         {authData.isSubscriptionActive
+             ?
             <Button
               labelStyle={{color: 'white', fontSize: 20}}
               style={styles.connectButton(isVpnConnected)}
@@ -266,13 +247,16 @@ export default function MainScreen() {
             >
               {btnText}
             </Button>
+           :
+           <Button
+              labelStyle={{color: 'white', fontSize: 20}}
+              style={styles.connectButton(true)}
+              onPress={toTelegram}
+           >
+              Активировать профиль
+           </Button>
+          }
           </Animatable.View>
-          : <View style={styles.donationContainer(isVpnConnected)}>
-              <Text style={styles.donationText}>
-                Профиль не активирован, напишите нам в поддержку и мы поможем
-              </Text>
-          </View>
-        }
       </View>
     )
   }
