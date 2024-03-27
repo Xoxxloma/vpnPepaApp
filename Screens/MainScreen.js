@@ -1,4 +1,4 @@
-import {StyleSheet, Text, Platform, Image, View, Linking} from 'react-native';
+import {StyleSheet, Text, Platform, Image, View, Linking, PermissionsAndroid} from 'react-native';
 import React from 'react'
 import {Button, Menu} from "react-native-paper";
 import Toast from 'react-native-toast-message';
@@ -106,7 +106,24 @@ export default function MainScreen() {
     await Linking.openURL('https://play.google.com/store/apps/details?id=com.pepavpn')
   }
 
-  const toTelegram = async () => await Linking.openURL('http://t.me/vpn_pepa_bot?start=auth')
+  const toTelegram = async () => await Linking.openURL('http://t.me/vpn_pepa_bot')
+
+  const checkPermissions = async () => {
+    try {
+      await PermissionsAndroid.request(
+          'android.permission.POST_NOTIFICATIONS',
+          {
+            title: 'Бип-буп-бац. Это запрос на отображение нотификаций',
+            message:
+                'Вам не нужны разрешения, чтобы поступать так, как считаете нужным, нам, чтобы показать Вам статистику впн - они нужны.',
+            buttonNegative: 'Точно нет',
+            buttonPositive: 'Конечно да',
+          },
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const getLastNews = async () => {
     const news = await API.getNews()
@@ -137,6 +154,7 @@ export default function MainScreen() {
 
   const toggleVpn = async () => {
     if (isVpnDisconnected) {
+      checkPermissions()
       return await startOvpn()
     }
     if (isVpnConnected) {
@@ -375,4 +393,3 @@ const styles = StyleSheet.create({
     padding: 15
   },
 });
-
